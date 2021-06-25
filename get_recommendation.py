@@ -51,19 +51,27 @@ def get_recommendation(user_input):
     # create df of recommendations
     similarity_score = []
     podcast = []
-    description = []
+    #description = []
     
     for i in similar_idx:
         similarity_score.append(similarity[x][i])
         podcast.append(df1['title'][i])
-        description.append(df1['description'][i])
+        #description.append(df1['description'][i])
+        
 
     recommendations = pd.DataFrame(
     {'similarity_score': similarity_score,
-     'podcast': podcast,
-     'description': description})
+     'title': podcast})
+     #'description': description})
     
+    # merge data frames
+    recommendations = pd.merge(recommendations, df, on='title')
+    
+    # sort
     recommendations.sort_values(by=['similarity_score'], ascending=False, inplace=True)
+    
+    #drop unneeded columns
+    recommendations.drop(columns=['all_text', 'cat_list'], inplace=True)
     
     # convert df to json
     reco_json = recommendations.to_json(orient = 'records')
